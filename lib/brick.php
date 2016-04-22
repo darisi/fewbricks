@@ -542,15 +542,9 @@ class brick
 
         }
 
-        // Let's store them here for more flexibility
         $this->get_html_args = $args;
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $html = $this->get_brick_html();
-
-        $html = $this->get_brick_layouted_html($html);
-
-        return $html;
+        return $this->get_brick_layouted_html($this->get_brick_html());
 
     }
 
@@ -588,12 +582,23 @@ class brick
 
             foreach ($this->brick_layouts AS $brick_layout) {
 
-                ob_start();
+                if(substr($brick_layout, -5) === '.twig') {
 
-                /** @noinspection PhpIncludeInspection */
-                include($theme_path . 'fewbricks/brick-layouts/' . $brick_layout . '.php');
+                    $html = \Timber::compile($theme_path . 'fewbricks/brick-layouts/' . $brick_layout, [
+                        'html' => $html,
+                        'this' => $this
+                    ]);
 
-                $html = ob_get_clean();
+                } else {
+
+                    ob_start();
+
+                    /** @noinspection PhpIncludeInspection */
+                    include($theme_path . 'fewbricks/brick-layouts/' . $brick_layout . '.php');
+
+                    $html = ob_get_clean();
+
+                }
 
             }
 
@@ -614,7 +619,6 @@ class brick
             $this->fields[] = $field_to_add;
 
         }
-
 
     }
 
@@ -665,7 +669,6 @@ class brick
     {
 
         $this->key = $key;
-
         return $this;
 
     }
@@ -678,7 +681,6 @@ class brick
     {
 
         $this->name = $name;
-
         return $this;
 
     }
@@ -692,7 +694,6 @@ class brick
 
         /** @noinspection PhpUndefinedFieldInspection */
         $this->label = $label;
-
         return $this;
 
     }
@@ -705,7 +706,6 @@ class brick
     {
 
         $this->field_label_prefix = $prefix;
-
         return $this;
 
     }
@@ -718,7 +718,6 @@ class brick
     {
 
         $this->field_label_suffix = $suffix;
-
         return $this;
 
     }
@@ -733,7 +732,6 @@ class brick
     {
 
         $this->{$name} = $value;
-
         return $this;
 
 
